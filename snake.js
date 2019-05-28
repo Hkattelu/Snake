@@ -1,16 +1,21 @@
 const gridSize = 25;
+const blockSize = 20;
 
 const initialX = 12;
 const initialY = 12;
 const initialDirection = 'r';
 const initialLength = 4;
+
 const snakeColor = 'red';
-const blockSize = 20;
+const fruitColor = 'blue';
 
 let canvas;
 let grid;
+
 let snakeHead;
 let snakeTail;
+let fruitX = 0;
+let fruitY = 0;
 
 let gameLoop;
 
@@ -36,16 +41,15 @@ function initSnake(size, before) {
 function init() {
   grid = new Array(gridSize).fill(0)
             .map(() => new Array(gridSize).fill(''));
+
   snakeHead = initSnake(initialLength);
+  resetFruit();
+
   canvas = document.getElementById('canvas')
-                    .getContext('2d');
-  canvas.fillStyle = snakeColor;
+     .getContext('2d');
 }
 
 function update() {
-  snakeTail = snakeTail.before;
-  snakeTail.after = undefined;
-
   let newX = snakeHead.x;
   let newY = snakeHead.y; 
   switch(snakeHead.facing) {
@@ -78,12 +82,28 @@ function update() {
     after: snakeHead,
   }
   snakeHead = snakeHead.before;
+  
+  if (grid[newX][newY] === 'x') {
+    resetFruit();
+  } else {
+    snakeTail = snakeTail.before;
+    snakeTail.after = undefined;
+  }
   return true;
+}
+
+function resetFruit() {
+  grid[fruitX][fruitY] = '';
+  fruitX = Math.floor(Math.random() * gridSize);
+  fruitY = Math.floor(Math.random() * gridSize);
+  grid[fruitX][fruitY] = 'x';
 }
 
 function draw() {
   canvas.clearRect(0, 0, gridSize*blockSize, gridSize*blockSize);
   const b = blockSize;
+
+  canvas.fillStyle = snakeColor;
   let snakePiece = snakeHead;
   while (!!snakePiece) {
      canvas.fillRect(
@@ -91,6 +111,10 @@ function draw() {
          b - 1, b - 1);
      snakePiece = snakePiece.after;
   }
+
+  canvas.fillStyle = fruitColor;
+  canvas.fillRect(fruitX * b + 1, fruitY * b + 1,
+         b - 1, b - 1);
 }
 
 function loop() {

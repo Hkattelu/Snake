@@ -5,5 +5,4 @@ download and open "snake.html" with your browser to play.
 
 ## TODO
 
-* Make food randomly appear to make the snake bigger
 * Add a score display
